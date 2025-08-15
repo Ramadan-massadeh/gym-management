@@ -2,26 +2,27 @@
 package dao;
 
 import model.Membership;
+import util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MembershipDao {
 
+    private static final Logger logger = Logger.getLogger(MembershipDao.class.getName());
+
     // add new membership
     public void saveMembership(Membership membership) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "INSERT INTO memberships (type, description, price, duration_months, member_id, start_date, end_date) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "INSERT INTO memberships (type, description, price, duration_months, member_id, start_date, end_date) " +
-                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, membership.getType());
             stmt.setString(2, membership.getDescription());
             stmt.setDouble(3, membership.getPrice());
@@ -32,36 +33,21 @@ public class MembershipDao {
 
             stmt.executeUpdate();
             System.out.println("Membership saved successfully.");
-
-        } catch (Exception e) {
-            System.out.println("Error saving membership: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error saving membership", e);
         }
     }
 
     // list all memberships
     public List<Membership> getAllMemberships() {
         List<Membership> memberships = new ArrayList<>();
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM memberships";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM memberships";
-            rs = stmt.executeQuery(sql);
-
+        try (
+                Connection conn = DBConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
             while (rs.next()) {
                 Membership m = new Membership();
                 m.setMembershipId(rs.getInt("membership_id"));
@@ -75,34 +61,21 @@ public class MembershipDao {
 
                 memberships.add(m);
             }
-
-        } catch (Exception e) {
-            System.out.println("Error reading memberships: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error reading memberships", e);
         }
+
         return memberships;
     }
 
     // delete membership by id
     public void deleteMembership(int membershipId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "DELETE FROM memberships WHERE membership_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "DELETE FROM memberships WHERE membership_id = ?";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setInt(1, membershipId);
 
             int rows = stmt.executeUpdate();
@@ -111,34 +84,20 @@ public class MembershipDao {
             } else {
                 System.out.println("No membership found with this ID.");
             }
-
-        } catch (Exception e) {
-            System.out.println("Error deleting membership: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error deleting membership", e);
         }
     }
 
     // update membership info
     public void updateMembership(Membership membership) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "UPDATE memberships SET type = ?, description = ?, price = ?, duration_months = ?, " +
+                "member_id = ?, start_date = ?, end_date = ? WHERE membership_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "UPDATE memberships SET type = ?, description = ?, price = ?, duration_months = ?, " +
-                         "member_id = ?, start_date = ?, end_date = ? WHERE membership_id = ?";
-            stmt = conn.prepareStatement(sql);
-
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, membership.getType());
             stmt.setString(2, membership.getDescription());
             stmt.setDouble(3, membership.getPrice());
@@ -154,16 +113,8 @@ public class MembershipDao {
             } else {
                 System.out.println("No membership found with this ID.");
             }
-
-        } catch (Exception e) {
-            System.out.println("Error updating membership: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating membership", e);
         }
     }
 }
