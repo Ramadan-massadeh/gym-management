@@ -50,45 +50,45 @@ The Gym Management System provides different features to users based on their ro
 
 Admins have full system access and can manage users, memberships, merchandise, and track revenue.
 
-| Option | Description |
-|--------|-------------|
-| `1` | **View all users** - Displays all registered users with contact info |
-| `2` | **Delete user by ID** - Removes a user from the system by user ID |
-| `3` | **View all memberships** - Lists all gym memberships that have been purchased |
-| `4` | **Total membership revenue** - Shows total revenue generated from memberships |
-| `5` | **List merch items** - Displays all gym merchandise currently in inventory |
-| `6` | **Add merch item** - Add a new item to the merch inventory |
-| `7` | **Update merch item** - Edit existing merch information (name, price, etc.) |
-| `8` | **Delete merch item** - Remove a merch item by ID |
-| `9` | **Total stock value** - Calculates total value of inventory (price × quantity) |
-| `0` | **Back** - Return to the main menu |
+| Option | Description                                                                    |
+|--------|--------------------------------------------------------------------------------|
+| `1`    | **View all users** - Displays all registered users with contact info           |
+| `2`    | **Delete user by ID** - Removes a user from the system by user ID              |
+| `3`    | **View all memberships** - Lists all gym memberships that have been purchased  |
+| `4`    | **Total membership revenue** - Shows total revenue generated from memberships  |
+| `5`    | **List merch items** - Displays all gym merchandise currently in inventory     |
+| `6`    | **Add merch item** - Add a new item to the merch inventory                     |
+| `7`    | **Update merch item** - Edit existing merch information (name, price, etc.)    |
+| `8`    | **Delete merch item** - Remove a merch item by ID                              |
+| `9`    | **Total stock value** - Calculates total value of inventory (price × quantity) |
+| `0`    | **Back** - Return to the main menu                                             |
 
 #### Trainer Menu
 
 Trainers can manage workout classes, purchase memberships, and view merch.
 
-| Option | Description |
-|--------|-------------|
-| `1` | **Create class** - Adds a new workout class (title, description, schedule) |
-| `2` | **Update class** - Edit a workout class’s information |
-| `3` | **Delete class** - Remove a class by its ID |
-| `4` | **List my classes** - View only the trainer's own assigned classes |
-| `5` | **Buy membership (for yourself)** - Purchase a gym membership for personal use |
-| `6` | **View merch items** - View all gym merchandise available |
-| `0` | **Back** - Return to the main menu |
+| Option | Description                                                                    |
+|--------|--------------------------------------------------------------------------------|
+| `1`    | **Create class** - Adds a new workout class (title, description, schedule)     |
+| `2`    | **Update class** - Edit a workout class’s information                          |
+| `3`    | **Delete class** - Remove a class by its ID                                    |
+| `4`    | **List my classes** - View only the trainer's own assigned classes             |
+| `5`    | **Buy membership (for yourself)** - Purchase a gym membership for personal use |
+| `6`    | **View merch items** - View all gym merchandise available                      |
+| `0`    | **Back** - Return to the main menu                                             |
 
 #### Member Menu
 
 Members can purchase memberships, track their spending, browse classes, and view merch.
 
-| Option | Description |
-|--------|-------------|
-| `1` | **Browse workout classes** - See all available workout classes |
-| `2` | **Buy membership** - Purchase a gym membership |
-| `3` | **View my memberships** - See a list of memberships purchased by the member |
-| `4` | **View my total spent** - Calculate and display the total amount spent on memberships |
-| `5` | **View merch items** - Browse gym merchandise available for purchase |
-| `0` | **Back** - Return to the main menu |
+| Option | Description                                                                           |
+|--------|---------------------------------------------------------------------------------------|
+| `1`    | **Browse workout classes** - See all available workout classes                        |
+| `2`    | **Buy membership** - Purchase a gym membership                                        |
+| `3`    | **View my memberships** - See a list of memberships purchased by the member           |
+| `4`    | **View my total spent** - Calculate and display the total amount spent on memberships |
+| `5`    | **View merch items** - Browse gym merchandise available for purchase                  |
+| `0`    | **Back** - Return to the main menu                                                    |
 
 
 ## 2. Development Documentation
@@ -120,7 +120,7 @@ Members can purchase memberships, track their spending, browse classes, and view
 ### Build Process & Dependencies
 - **Language**: Java 15+
 - **Database**: PostgreSQL
-- **Logger**: Java Util Logging (configured in `LogSetup.java`)
+- **Logger**: Java Util Logging (configured in `LogSetup.java`). The program automatically generates this file if it doesn't exist at the path already.
 - **BCrypt**: For password hashing (ensure the JAR is included or use Maven)
 
 
