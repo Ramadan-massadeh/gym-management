@@ -1,30 +1,22 @@
-
-//Ramadan Masadekh
+// Ramadan Masadekh
 package dao;
 
 import model.User;
+import util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
 
-    // add new user
+    // Add new user
     public void saveUser(User user) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "INSERT INTO users (name, email, phone_number, address, password_hash, role) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try {
-            // connect to the database
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            // insert new user
-            String sql = "INSERT INTO users (name, email, phone_number, address, password_hash, role) " +
-                         "VALUES (?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
@@ -36,33 +28,19 @@ public class UserDao {
             stmt.executeUpdate();
             System.out.println("User saved successfully.");
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error saving user: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
-    // list all users
+    // List all users
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        Connection conn = null;
-        Statement stmt = null;
+        String sql = "SELECT * FROM users";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM users";
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 User u = new User();
@@ -77,78 +55,60 @@ public class UserDao {
                 users.add(u);
             }
 
-            rs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error reading users: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
 
         return users;
     }
 
+    // Find user by email
     public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE email = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 User u = new User();
-                u.setUserId(rs.getInt("id"));
+                u.setUserId(rs.getInt("user_id"));
                 u.setName(rs.getString("name"));
                 u.setEmail(rs.getString("email"));
-                u.setPasswordHash(rs.getString("password"));
+                u.setPasswordHash(rs.getString("password_hash"));
                 u.setRole(rs.getString("role"));
                 u.setAddress(rs.getString("address"));
-                u.setPhoneNumber(rs.getString("phone"));
+                u.setPhoneNumber(rs.getString("phone_number"));
                 return u;
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Replace with logger if needed
+            System.out.println("Error finding user by email: " + e.getMessage());
         }
 
         return null;
     }
 
-    // delete user by id
+    // Delete user by ID
     public void deleteUser(int userId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "DELETE FROM users WHERE user_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String sql = "DELETE FROM users WHERE user_id = ?";
-            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
-
             int rows = stmt.executeUpdate();
+
             if (rows > 0) {
                 System.out.println("User deleted successfully.");
             } else {
                 System.out.println("No user found with this ID.");
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error deleting user: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }
