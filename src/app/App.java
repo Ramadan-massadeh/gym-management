@@ -10,12 +10,16 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * Main entry point for the Gym Management System.
+ * This class handles all console-based user interactions,
+ * including login, registration, and role-based menus (Admin, Trainer, Member).
+ */
 public class App {
 
-    private final Scanner in = new Scanner(System.in);
+    private final Scanner in = new Scanner(System.in); // For user input
 
-    // Services
+    // Services used across different menus
     private final UserService userSvc = new UserService(new UserDao());
     private final AdminService adminSvc = new AdminService();
     private final TrainerService trainerSvc = new TrainerService();
@@ -24,13 +28,19 @@ public class App {
 
     private static final Logger logger = Logger.getLogger(App.class.getName());
 
+    /**
+     * Main method - starts the program.
+     */
     public static void main(String[] args) {
-        LogSetup.configure();
-        Initializer.setup(); // initialize tables if they don’t exist
+        LogSetup.configure();           // Set up logging configuration
+        Initializer.setup();            // Initialize database tables if needed
         System.out.println("Gym Management System Started");
-        new App().run();
+        new App().run();                // Launch the application loop
     }
 
+    /**
+     * Handles user login flow including input and role-based redirection.
+     */
     private void loginFlow() {
         System.out.println("\n-- User Login --");
         System.out.print("Email: ");
@@ -56,6 +66,9 @@ public class App {
         }
     }
 
+    /**
+     * Main menu loop where the user can choose to log in, register, or exit.
+     */
     private void run() {
         boolean running = true;
         while (running) {
@@ -80,10 +93,11 @@ public class App {
         System.out.println("Goodbye!");
     }
 
-    // Registration
+    /**
+     * Handles registration of a new user with validation.
+     */
     private void registerUserFlow() {
         System.out.println("\n-- Register New User --");
-
         User u = new User();
 
         System.out.print("Name: ");
@@ -141,6 +155,9 @@ public class App {
         }
     }
 
+    /**
+     * Admin-specific menu with options to manage users, memberships, and merchandise.
+     */
     private void adminMenu() {
         boolean back = false;
         while (!back) {
@@ -161,19 +178,13 @@ public class App {
             try {
                 switch (c) {
                     case "1" -> adminSvc.viewAllUsers().forEach(System.out::println);
-                    case "2" -> {
-                        int id = askInt("User ID to delete: ");
-                        adminSvc.deleteUser(id);
-                    }
+                    case "2" -> adminSvc.deleteUser(askInt("User ID to delete: "));
                     case "3" -> adminSvc.viewAllMemberships().forEach(System.out::println);
                     case "4" -> System.out.println("Total membership revenue: $" + adminSvc.totalMembershipRevenue());
                     case "5" -> adminSvc.listItems().forEach(System.out::println);
                     case "6" -> addMerchFlow();
                     case "7" -> updateMerchFlow();
-                    case "8" -> {
-                        int id = askInt("Item ID to delete: ");
-                        adminSvc.deleteItem(id);
-                    }
+                    case "8" -> adminSvc.deleteItem(askInt("Item ID to delete: "));
                     case "9" -> System.out.println("Total stock value: $" + adminSvc.totalStockValue());
                     case "0" -> back = true;
                     default -> System.out.println("Invalid choice.");
@@ -184,6 +195,9 @@ public class App {
         }
     }
 
+    /**
+     * Prompts admin to enter merch item details and adds it.
+     */
     private void addMerchFlow() {
         try {
             Merch m = new Merch();
@@ -199,6 +213,9 @@ public class App {
         }
     }
 
+    /**
+     * Prompts admin to update an existing merch item.
+     */
     private void updateMerchFlow() {
         try {
             Merch m = new Merch();
@@ -215,7 +232,11 @@ public class App {
         }
     }
 
-    //Trainer Menu
+    /**
+     * Trainer-specific menu for managing their classes and purchasing membership.
+     *
+     * @param user The currently logged-in trainer.
+     */
     private void trainerMenu(User user) {
         boolean back = false;
         while (!back) {
@@ -234,10 +255,7 @@ public class App {
                 switch (c) {
                     case "1" -> createClassFlow();
                     case "2" -> updateClassFlow();
-                    case "3" -> {
-                        int id = askInt("Class ID to delete: ");
-                        trainerSvc.deleteClass(id);
-                    }
+                    case "3" -> trainerSvc.deleteClass(askInt("Class ID to delete: "));
                     case "4" -> trainerSvc.myClasses(user.getUserId()).forEach(System.out::println);
                     case "5" -> buyMembershipFlow(true);
                     case "6" -> trainerSvc.viewMerch().forEach(System.out::println);
@@ -250,6 +268,9 @@ public class App {
         }
     }
 
+    /**
+     * Gathers input to create a new workout class.
+     */
     private void createClassFlow() {
         try {
             WorkoutClass c = new WorkoutClass();
@@ -266,6 +287,9 @@ public class App {
         }
     }
 
+    /**
+     * Gathers input to update an existing workout class.
+     */
     private void updateClassFlow() {
         try {
             WorkoutClass c = new WorkoutClass();
@@ -283,7 +307,11 @@ public class App {
         }
     }
 
-    // Member Menu
+    /**
+     * Member-specific menu for classes, memberships, and merch.
+     *
+     * @param user The currently logged-in member.
+     */
     private void memberMenu(User user) {
         boolean back = false;
         while (!back) {
@@ -313,6 +341,11 @@ public class App {
         }
     }
 
+    /**
+     * Prompts user to enter membership details and saves the purchase.
+     *
+     * @param asTrainer true if the user is a trainer, false if a member
+     */
     private void buyMembershipFlow(boolean asTrainer) {
         try {
             System.out.println("\n-- Purchase Membership --");
@@ -336,6 +369,12 @@ public class App {
         }
     }
 
+    /**
+     * Prompts and validates an integer from user input.
+     *
+     * @param prompt Prompt message to show the user.
+     * @return Parsed integer value.
+     */
     private int askInt(String prompt) {
         while (true) {
             try {
@@ -347,6 +386,12 @@ public class App {
         }
     }
 
+    /**
+     * Prompts and validates a double from user input.
+     *
+     * @param prompt Prompt message to show the user.
+     * @return Parsed double value.
+     */
     private double askDouble(String prompt) {
         while (true) {
             try {

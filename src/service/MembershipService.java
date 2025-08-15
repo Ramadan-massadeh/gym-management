@@ -5,13 +5,37 @@ import model.Membership;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class responsible for handling gym membership operations,
+ * such as purchasing or updating memberships.
+ */
 public class MembershipService {
     private final MembershipDao membershipDao;
 
+    /**
+     * Default constructor that initializes with a default MembershipDao instance.
+     */
     public MembershipService() { this.membershipDao = new MembershipDao(); }
+
+    /**
+     * Constructor for dependency injection. Useful for testing or using custom DAO.
+     *
+     * @param dao The MembershipDao instance to use.
+     */
     public MembershipService(MembershipDao membershipDao) { this.membershipDao = membershipDao; }
 
+    /**
+     * Saves a new membership to the database, representing a purchase.
+     *
+     * @param m The Membership object to be saved.
+     */
     public void purchase(Membership m) { membershipDao.saveMembership(m); }
+
+    /**
+     * Updates an existing membership with new data.
+     *
+     * @param m The updated Membership object.
+     */
     public void update(Membership m) { membershipDao.updateMembership(m); }
     public void delete(int membershipId) { membershipDao.deleteMembership(membershipId); }
 

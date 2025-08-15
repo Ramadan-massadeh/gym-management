@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Service class for Member-related functionalities in the Gym Management System.
+ * Allows members to manage profiles, memberships, browse classes, and view merch.
+ */
 public class MemberService {
     private static final Logger logger = Logger.getLogger(MemberService.class.getName());
 
@@ -22,6 +26,9 @@ public class MemberService {
     private final WorkoutClassDao classDao;
     private final GymMerchDao merchDao;
 
+    /**
+     * Default constructor initializing DAOs with default implementations.
+     */
     public MemberService() {
         this.memberDao = new MemberDao();
         this.membershipDao = new MembershipDao();
@@ -29,6 +36,14 @@ public class MemberService {
         this.merchDao = new GymMerchDao();
     }
 
+    /**
+     * Constructor for dependency injection.
+     *
+     * @param memberDao       DAO for member profile management.
+     * @param membershipDao   DAO for handling memberships.
+     * @param classDao        DAO for workout class browsing.
+     * @param merchDao        DAO for viewing merchandise.
+     */
     public MemberService(MemberDao memberDao, MembershipDao membershipDao, WorkoutClassDao classDao, GymMerchDao merchDao) {
         this.memberDao = memberDao;
         this.membershipDao = membershipDao;
@@ -36,7 +51,14 @@ public class MemberService {
         this.merchDao = merchDao;
     }
 
-    // Member profile
+
+    // ------------------------- Member Profile -------------------------
+
+    /**
+     * Adds a new member to the database.
+     *
+     * @param m the Member object to add.
+     */
     public void addMember(Member m) {
         try {
             memberDao.addMember(m);
@@ -45,6 +67,11 @@ public class MemberService {
         }
     }
 
+    /**
+     * Updates an existing member's information.
+     *
+     * @param m the Member object with updated data.
+     */
     public void updateMember(Member m) {
         try {
             memberDao.updateMember(m);
@@ -53,6 +80,9 @@ public class MemberService {
         }
     }
 
+    /**
+     * Displays all members in the system.
+     */
     public void displayAllMembers() {
         try {
             memberDao.displayAllMembers();
@@ -61,7 +91,13 @@ public class MemberService {
         }
     }
 
-    // Memberships
+    // ------------------------- Memberships -------------------------
+
+    /**
+     * Allows a member to purchase a gym membership.
+     *
+     * @param m the Membership object to save.
+     */
     public void buyMembership(Membership m) {
         try {
             membershipDao.saveMembership(m);
@@ -70,6 +106,12 @@ public class MemberService {
         }
     }
 
+    /**
+     * Returns a list of memberships owned by a specific member.
+     *
+     * @param memberId the member's user ID.
+     * @return List of Membership objects.
+     */
     public List<Membership> myMemberships(int memberId) {
         try {
             return membershipDao.getMembershipsByMemberId(memberId);
@@ -79,6 +121,12 @@ public class MemberService {
         }
     }
 
+    /**
+     * Calculates the total money spent by the member on memberships.
+     *
+     * @param memberId the member's user ID.
+     * @return total amount spent as a double.
+     */
     public double myTotalSpent(int memberId) {
         try {
             return myMemberships(memberId).stream()
@@ -90,7 +138,13 @@ public class MemberService {
         }
     }
 
-    // Classes
+    // ------------------------- Workout Classes -------------------------
+
+    /**
+     * Returns a list of all workout classes available in the system.
+     *
+     * @return List of WorkoutClass objects.
+     */
     public List<WorkoutClass> browseClasses() {
         try {
             return classDao.getAllClasses();
@@ -100,7 +154,13 @@ public class MemberService {
         }
     }
 
-    // Merchandise
+    // ------------------------- Merchandise -------------------------
+
+    /**
+     * Returns a list of all merchandise items available in the gym store.
+     *
+     * @return List of Merch objects.
+     */
     public List<Merch> viewMerch() {
         try {
             return merchDao.getAllItems();
