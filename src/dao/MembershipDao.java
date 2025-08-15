@@ -68,6 +68,40 @@ public class MembershipDao {
         return memberships;
     }
 
+    // get memberships by member ID
+    public List<Membership> getMembershipsByMemberId(int memberId) {
+        List<Membership> memberships = new ArrayList<>();
+        String sql = "SELECT * FROM memberships WHERE member_id = ?";
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Membership m = new Membership();
+                m.setMembershipId(rs.getInt("membership_id"));
+                m.setType(rs.getString("type"));
+                m.setDescription(rs.getString("description"));
+                m.setPrice(rs.getDouble("price"));
+                m.setDurationMonths(rs.getInt("duration_months"));
+                m.setMemberId(rs.getInt("member_id"));
+                m.setStartDate(rs.getString("start_date"));
+                m.setEndDate(rs.getString("end_date"));
+
+                memberships.add(m);
+            }
+
+            rs.close();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching memberships by member ID", e);
+        }
+
+        return memberships;
+    }
+
     // delete membership by id
     public void deleteMembership(int membershipId) {
         String sql = "DELETE FROM memberships WHERE membership_id = ?";
