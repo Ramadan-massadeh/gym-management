@@ -20,7 +20,7 @@ public class MembershipService {
     /**
      * Constructor for dependency injection. Useful for testing or using custom DAO.
      *
-     * @param dao The MembershipDao instance to use.
+     * @param membershipDao The MembershipDao instance to use.
      */
     public MembershipService(MembershipDao membershipDao) { this.membershipDao = membershipDao; }
 

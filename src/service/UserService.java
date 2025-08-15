@@ -15,15 +15,15 @@ public class UserService {
     /**
      * Constructor with dependency injection.
      *
-     * @param dao The UserDao instance to be used.
+     * @param userDao The UserDao instance to be used.
      */
     public UserService(UserDao userDao) { this.userDao = userDao; }
 
     /**
      * Registers a new user after hashing their plain-text password.
      *
-     * @param u         The User object containing the user's information.
-     * @param plainPass The plain-text password to be hashed and stored.
+     * @param plainPassword         The User object containing the user's information.
+     * @param user The plain-text password to be hashed and stored.
      */
     public void registerWithPlainPassword(User user, String plainPassword) {
         String hashed = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
@@ -35,7 +35,7 @@ public class UserService {
      * Authenticates a user by comparing the input password with the hashed password in the database.
      *
      * @param email    The email used for login.
-     * @param password The plain-text password entered by the user.
+     * @param plainPassword The plain-text password entered by the user.
      * @return The authenticated User object if credentials are valid; otherwise null.
      */
     public User login(String email, String plainPassword) {
