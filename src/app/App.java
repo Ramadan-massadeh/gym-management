@@ -4,10 +4,12 @@ import model.*;
 import service.*;
 import dao.UserDao;
 import util.Initializer;
+import util.LogSetup;
 
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class App {
 
@@ -23,6 +25,7 @@ public class App {
     private static final Logger logger = Logger.getLogger(App.class.getName());
 
     public static void main(String[] args) {
+        LogSetup.configure();
         Initializer.setup(); // initialize tables if they don’t exist
         System.out.println("Gym Management System Started");
         new App().run();
