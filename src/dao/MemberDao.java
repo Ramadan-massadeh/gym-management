@@ -1,29 +1,25 @@
 // Ramadan Masadekh
 package dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
 import model.Member;
+import util.DBConnection;
+
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MemberDao {
 
+    private static final Logger logger = Logger.getLogger(MemberDao.class.getName());
+
     // Add new member
     public void addMember(Member m) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "INSERT INTO members (name, email, phone, address, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "INSERT INTO members (name, email, phone, address, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, m.getName());
             stmt.setString(2, m.getEmail());
             stmt.setString(3, m.getPhoneNumber());
@@ -33,27 +29,19 @@ public class MemberDao {
 
             stmt.executeUpdate();
             System.out.println("Member added successfully.");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            try { if (stmt != null) stmt.close(); if (conn != null) conn.close(); } 
-            catch (SQLException ex) { ex.printStackTrace(); }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error adding member", e);
         }
     }
 
-    // update member
+    // Update member
     public void updateMember(Member m) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "UPDATE members SET name = ?, email = ?, phone = ?, address = ? WHERE member_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "UPDATE members SET name = ?, email = ?, phone = ?, address = ? WHERE member_id = ?";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, m.getName());
             stmt.setString(2, m.getEmail());
             stmt.setString(3, m.getPhoneNumber());
@@ -66,45 +54,31 @@ public class MemberDao {
             } else {
                 System.out.println("No member found with this ID.");
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            try { if (stmt != null) stmt.close(); if (conn != null) conn.close(); } 
-            catch (SQLException ex) { ex.printStackTrace(); }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating member", e);
         }
     }
 
-    //Display All members
+    // Display all members
     public void displayAllMembers() {
-        Connection conn = null;
-        Statement stmt = null;
+        String sql = "SELECT * FROM members";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM members";
-            ResultSet rs = stmt.executeQuery(sql);
-
+        try (
+                Connection conn = DBConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
             while (rs.next()) {
                 System.out.println(
-                    rs.getInt("member_id") + " | " +
-                    rs.getString("name") + " | " +
-                    rs.getString("email") + " | " +
-                    rs.getString("phone") + " | " +
-                    rs.getString("address")
+                        rs.getInt("member_id") + " | " +
+                                rs.getString("name") + " | " +
+                                rs.getString("email") + " | " +
+                                rs.getString("phone") + " | " +
+                                rs.getString("address")
                 );
             }
-
-            rs.close();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            try { if (stmt != null) stmt.close(); if (conn != null) conn.close(); } 
-            catch (SQLException ex) { ex.printStackTrace(); }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error displaying members", e);
         }
     }
 }
