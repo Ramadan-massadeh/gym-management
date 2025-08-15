@@ -3,6 +3,7 @@ package service;
 import dao.UserDao;
 import model.User;
 import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
     private final UserDao userDao;
@@ -13,7 +14,8 @@ public class UserService {
     public void register(User user) { userDao.saveUser(user); }
 
     public void registerWithPlainPassword(User user, String plainPassword) {
-        user.setPasswordHash(plainPassword);
+        String hashed = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+        user.setPasswordHash(hashed);
         userDao.saveUser(user);
     }
 
