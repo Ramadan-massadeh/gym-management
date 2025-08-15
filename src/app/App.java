@@ -3,6 +3,7 @@ package app;
 import model.*;
 import service.*;
 import dao.UserDao;
+import util.Initializer;
 import java.util.Scanner;
 
 public class App {
@@ -17,6 +18,7 @@ public class App {
     private final MembershipService membershipSvc = new MembershipService();
 
     public static void main(String[] args) {
+        Initializer.setup(); // initialize tables if they don't exist already
         System.out.println("Gym Management System Started");
         new App().run();
     }
@@ -31,8 +33,8 @@ public class App {
         User user = userSvc.login(email, password);
         if (user != null) {
             System.out.println("Login successful. Welcome, " + user.getName());
-            switch (user.getRole().toLowerCase()) {
-                case "admin" -> adminMenu(user);
+            switch (user.getRole()) {
+                case "admin" -> adminMenu();
                 case "trainer" -> trainerMenu(user);
                 case "member" -> memberMenu(user);
                 default -> System.out.println("Unknown role: " + user.getRole());
@@ -70,19 +72,63 @@ public class App {
     // Registration 
     private void registerUserFlow() {
         System.out.println("\n-- Register New User --");
+
         User u = new User();
-        System.out.print("Name: "); u.setName(in.nextLine().trim());
-        System.out.print("Email: "); u.setEmail(in.nextLine().trim());
-        System.out.print("Phone: "); u.setPhoneNumber(in.nextLine().trim());
-        System.out.print("Address: "); u.setAddress(in.nextLine().trim());
-        System.out.print("Role (Admin/Trainer/Member): "); u.setRole(in.nextLine().trim());
-        System.out.print("Password: "); String pw = in.nextLine().trim();
+
+        System.out.print("Name: ");
+        String name = in.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("Name cannot be empty.");
+            return;
+        }
+        u.setName(name);
+
+        System.out.print("Email: ");
+        String email = in.nextLine().trim();
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            System.out.println("Invalid email format.");
+            return;
+        }
+        u.setEmail(email);
+
+        System.out.print("Phone: ");
+        String phone = in.nextLine().trim();
+        if (phone.isEmpty()) {
+            System.out.println("Phone number cannot be empty.");
+            return;
+        }
+        u.setPhoneNumber(phone);
+
+        System.out.print("Address: ");
+        String address = in.nextLine().trim();
+        if (address.isEmpty()) {
+            System.out.println("Address cannot be empty.");
+            return;
+        }
+        u.setAddress(address);
+
+        System.out.print("Role (Admin/Trainer/Member): ");
+        String role = in.nextLine().trim().toLowerCase();
+        if (!role.equals("admin") && !role.equals("trainer") && !role.equals("member")) {
+            System.out.println("Invalid role. Please enter Admin, Trainer, or Member.");
+            return;
+        }
+        u.setRole(role);
+
+        System.out.print("Password: ");
+        String pw = in.nextLine().trim();
+        if (pw.length() < 6) {
+            System.out.println("Password must be at least 6 characters long.");
+            return;
+        }
 
         userSvc.registerWithPlainPassword(u, pw);
+        System.out.println("Registration successful!");
     }
 
+
     //Admin Menu
-    private void adminMenu(User user) {
+    private void adminMenu() {
         boolean back = false;
         while (!back) {
             System.out.println("\n=== Admin Menu ===");
