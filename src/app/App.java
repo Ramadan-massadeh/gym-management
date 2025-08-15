@@ -40,7 +40,7 @@ public class App {
             if (user != null) {
                 System.out.println("Login successful. Welcome, " + user.getName());
                 switch (user.getRole()) {
-                    case "admin" -> adminMenu(user);
+                    case "admin" -> adminMenu();
                     case "trainer" -> trainerMenu(user);
                     case "member" -> memberMenu(user);
                     default -> System.out.println("Unknown role: " + user.getRole());
