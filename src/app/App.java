@@ -2,6 +2,7 @@ package app;
 
 import model.*;
 import service.*;
+import dao.UserDao;
 import java.util.Scanner;
 
 public class App {
@@ -9,7 +10,7 @@ public class App {
     private final Scanner in = new Scanner(System.in);
 
     // Services
-    private final UserService userSvc = new UserService();
+    private final UserService userSvc = new UserService(new UserDao());
     private final AdminService adminSvc = new AdminService();
     private final TrainerService trainerSvc = new TrainerService();
     private final MemberService memberSvc = new MemberService();
@@ -168,7 +169,7 @@ public class App {
                         trainerSvc.deleteClass(id);
                     }
                     case "4" -> {
-                        int trainerId = askInt("Your trainerId (userId): ");
+                        int trainerId = user.getUserId();
                         trainerSvc.myClasses(trainerId).forEach(System.out::println);
                     }
                     case "5" -> buyMembershipFlow(true);

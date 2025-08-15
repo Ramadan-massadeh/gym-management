@@ -92,6 +92,32 @@ public class UserDao {
         return users;
     }
 
+    public User findByEmail(String email) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE email = ?")) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User u = new User();
+                u.setUserId(rs.getInt("id"));
+                u.setName(rs.getString("name"));
+                u.setEmail(rs.getString("email"));
+                u.setPasswordHash(rs.getString("password"));
+                u.setRole(rs.getString("role"));
+                u.setAddress(rs.getString("address"));
+                u.setPhoneNumber(rs.getString("phone"));
+                return u;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Replace with logger if needed
+        }
+
+        return null;
+    }
+
     // delete user by id
     public void deleteUser(int userId) {
         Connection conn = null;
