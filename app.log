@@ -1,0 +1,11 @@
+Aug 15, 2025 7:17:17 A.M. app.App main
+INFO: Gym Management System Started
+Aug 15, 2025 7:17:17 A.M. app.App run
+INFO: 
+=== Welcome to Gym Management ===
+Aug 15, 2025 7:17:17 A.M. app.App run
+INFO: 1) Login
+Aug 15, 2025 7:17:17 A.M. app.App run
+INFO: 2) Register User
+Aug 15, 2025 7:17:17 A.M. app.App run
+INFO: 0) Exit
