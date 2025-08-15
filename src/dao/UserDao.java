@@ -7,8 +7,12 @@ import util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserDao {
+
+    private static final Logger logger = Logger.getLogger(UserDao.class.getName());
 
     // Add new user
     public void saveUser(User user) {
@@ -29,7 +33,7 @@ public class UserDao {
             System.out.println("User saved successfully.");
 
         } catch (SQLException e) {
-            System.out.println("Error saving user: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error saving user", e);
         }
     }
 
@@ -56,7 +60,7 @@ public class UserDao {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error reading users: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error reading users", e);
         }
 
         return users;
@@ -85,7 +89,7 @@ public class UserDao {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error finding user by email: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error finding user by email", e);
         }
 
         return null;
@@ -108,7 +112,7 @@ public class UserDao {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error deleting user: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error deleting user", e);
         }
     }
 }
