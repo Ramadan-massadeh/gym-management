@@ -2,25 +2,26 @@
 package dao;
 
 import model.WorkoutClass;
+import util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WorkoutClassDao {
 
+    private static final Logger logger = Logger.getLogger(WorkoutClassDao.class.getName());
+
     // add new workout class
     public void saveClass(WorkoutClass c) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "INSERT INTO workout_classes (title, description, schedule, trainer_id) VALUES (?, ?, ?, ?)";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "INSERT INTO workout_classes (title, description, schedule, trainer_id) VALUES (?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, c.getTitle());
             stmt.setString(2, c.getDescription());
             stmt.setString(3, c.getSchedule());
@@ -28,76 +29,48 @@ public class WorkoutClassDao {
 
             stmt.executeUpdate();
             System.out.println("Class saved successfully.");
-        } catch (Exception e) {
-            System.out.println("Error saving class: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error saving class", e);
         }
     }
 
     // get a class by id
     public WorkoutClass getClassById(int classId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         WorkoutClass c = null;
+        String sql = "SELECT * FROM workout_classes WHERE class_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "SELECT * FROM workout_classes WHERE class_id = ?";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setInt(1, classId);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                c = new WorkoutClass();
-                c.setClassId(rs.getInt("class_id"));
-                c.setTitle(rs.getString("title"));
-                c.setDescription(rs.getString("description"));
-                c.setSchedule(rs.getString("schedule"));
-                c.setTrainerId(rs.getInt("trainer_id"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    c = new WorkoutClass();
+                    c.setClassId(rs.getInt("class_id"));
+                    c.setTitle(rs.getString("title"));
+                    c.setDescription(rs.getString("description"));
+                    c.setSchedule(rs.getString("schedule"));
+                    c.setTrainerId(rs.getInt("trainer_id"));
+                }
             }
-
-        } catch (Exception e) {
-            System.out.println("Error reading class: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error reading class", e);
         }
+
         return c;
     }
 
     // list all classes
     public List<WorkoutClass> getAllClasses() {
         List<WorkoutClass> classes = new ArrayList<>();
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM workout_classes";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM workout_classes";
-            rs = stmt.executeQuery(sql);
-
+        try (
+                Connection conn = DBConnection.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
             while (rs.next()) {
                 WorkoutClass c = new WorkoutClass();
                 c.setClassId(rs.getInt("class_id"));
@@ -107,34 +80,21 @@ public class WorkoutClassDao {
                 c.setTrainerId(rs.getInt("trainer_id"));
                 classes.add(c);
             }
-
-        } catch (Exception e) {
-            System.out.println("Error reading classes: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error reading classes", e);
         }
+
         return classes;
     }
 
     // update a class
     public void updateClass(WorkoutClass c) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "UPDATE workout_classes SET title = ?, description = ?, schedule = ?, trainer_id = ? WHERE class_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "UPDATE workout_classes SET title = ?, description = ?, schedule = ?, trainer_id = ? WHERE class_id = ?";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setString(1, c.getTitle());
             stmt.setString(2, c.getDescription());
             stmt.setString(3, c.getSchedule());
@@ -147,32 +107,19 @@ public class WorkoutClassDao {
             } else {
                 System.out.println("No class found with this ID.");
             }
-
-        } catch (Exception e) {
-            System.out.println("Error updating class: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating class", e);
         }
     }
 
     // delete a class
     public void deleteClass(int classId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        String sql = "DELETE FROM workout_classes WHERE class_id = ?";
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/gymdb", "postgres", "admin"
-            );
-
-            String sql = "DELETE FROM workout_classes WHERE class_id = ?";
-            stmt = conn.prepareStatement(sql);
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
             stmt.setInt(1, classId);
 
             int rows = stmt.executeUpdate();
@@ -181,16 +128,8 @@ public class WorkoutClassDao {
             } else {
                 System.out.println("No class found with this ID.");
             }
-
-        } catch (Exception e) {
-            System.out.println("Error deleting class: " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error deleting class", e);
         }
     }
 }
