@@ -2,7 +2,6 @@ package app;
 
 import model.*;
 import service.*;
-
 import java.util.Scanner;
 
 public class App {
@@ -21,24 +20,41 @@ public class App {
         new App().run();
     }
 
+    private void loginFlow() {
+        System.out.println("\n-- User Login --");
+        System.out.print("Email: ");
+        String email = in.nextLine().trim();
+        System.out.print("Password: ");
+        String password = in.nextLine().trim();
+
+        User user = userSvc.login(email, password);
+        if (user != null) {
+            System.out.println("Login successful. Welcome, " + user.getName());
+            switch (user.getRole().toLowerCase()) {
+                case "admin" -> adminMenu(user);
+                case "trainer" -> trainerMenu(user);
+                case "member" -> memberMenu(user);
+                default -> System.out.println("Unknown role: " + user.getRole());
+            }
+        } else {
+            System.out.println("Login failed. Invalid credentials.");
+        }
+    }
+
     private void run() {
         boolean running = true;
         while (running) {
             System.out.println("\n=== Welcome to Gym Management ===");
-            System.out.println("1) Admin");
-            System.out.println("2) Trainer");
-            System.out.println("3) Member");
-            System.out.println("4) Register User");
+            System.out.println("1) Login");
+            System.out.println("2) Register User");
             System.out.println("0) Exit");
             System.out.print("Choose: ");
             String choice = in.nextLine().trim();
 
             try {
                 switch (choice) {
-                    case "1" -> adminMenu();
-                    case "2" -> trainerMenu();
-                    case "3" -> memberMenu();
-                    case "4" -> registerUserFlow();
+                    case "1" -> loginFlow();
+                    case "2" -> registerUserFlow();
                     case "0" -> running = false;
                     default -> System.out.println("Invalid choice.");
                 }
@@ -65,7 +81,7 @@ public class App {
     }
 
     //Admin Menu
-    private void adminMenu() {
+    private void adminMenu(User user) {
         boolean back = false;
         while (!back) {
             System.out.println("\n=== Admin Menu ===");
@@ -128,8 +144,8 @@ public class App {
         adminSvc.updateItem(m);
     }
 
-    //Trainer MeN
-    private void trainerMenu() {
+    //Trainer Menu
+    private void trainerMenu(User user) {
         boolean back = false;
         while (!back) {
             System.out.println("\n=== Trainer Menu ===");
@@ -187,7 +203,7 @@ public class App {
     }
 
     // Member Menu 
-    private void memberMenu() {
+    private void memberMenu(User user) {
         boolean back = false;
         while (!back) {
             System.out.println("\n=== Member Menu ===");
@@ -205,11 +221,11 @@ public class App {
                     case "1" -> memberSvc.browseClasses().forEach(System.out::println);
                     case "2" -> buyMembershipFlow(false);
                     case "3" -> {
-                        int memberId = askInt("Your memberId (userId): ");
+                        int memberId = user.getUserId();
                         memberSvc.myMemberships(memberId).forEach(System.out::println);
                     }
                     case "4" -> {
-                        int memberId = askInt("Your memberId (userId): ");
+                        int memberId = user.getUserId();
                         System.out.println("Total spent: $" + memberSvc.myTotalSpent(memberId));
                     }
                     case "5" -> memberSvc.viewMerch().forEach(System.out::println);
