@@ -146,3 +146,5 @@ After setting up Maven, make sure to refresh Maven from the Maven tab in Intelli
 ## Project Demo Video
 
 https://drive.google.com/file/d/1gbZDv673Vd_N8rHiRqD39dqIs2tpkx9U/view?usp=share_link
+
+https://drive.google.com/file/d/1nx45Azjfjyzlm7aJJ3rwHdZaWzS7J58I/view?usp=share_link
